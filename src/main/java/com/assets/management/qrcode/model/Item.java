@@ -20,7 +20,7 @@ import io.smallrye.common.constraint.NotNull;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public class Items extends PanacheEntity {
+public class Item extends PanacheEntity {
 
 	@Column(length = 100)
 	public String name;
@@ -45,7 +45,7 @@ public class Items extends PanacheEntity {
 
 	@NotNull
 	@Column(name = "commissioning_date")
-	public LocalDate commissioningDate;
+	public LocalDate commissionedDate;
 
 	@Column(length = 3000)
 	public String comment;

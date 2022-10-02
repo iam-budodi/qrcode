@@ -12,9 +12,10 @@ import io.quarkus.hibernate.orm.panache.PanacheEntity;
 public class QRCode extends PanacheEntity {
 
 	public String code;
+//	public Custodian custodian;
 
 	@Enumerated(EnumType.STRING)
-	public String encoding;
+	public Encoding encoding;
 	
 	@Enumerated(EnumType.STRING)
 	public ErrorCorrection correction;

@@ -2,6 +2,8 @@ package com.assets.management.qrcode.rest;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.time.Instant;
+import java.time.LocalDate;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -11,6 +13,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.assets.management.qrcode.model.Category;
+import com.assets.management.qrcode.model.Computer;
+import com.assets.management.qrcode.model.ErrorCorrection;
+import com.assets.management.qrcode.model.Item;
+import com.assets.management.qrcode.model.QRSize;
 import com.assets.management.qrcode.service.QRCodeService;
 import com.google.zxing.WriterException;
 
@@ -24,10 +31,19 @@ public class QRCodeResource {
 	@Produces("image/png")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response generateQR() throws WriterException, IOException {
-		String qrText = "Japhet Budodi Sebastian";
-		int size = 125;
+		String qrText = "Japhet Should Pass items Object";
+//		int size = 125;
 
-		byte[] qrStream = qrService.getByteQRCode(qrText, size, size);
+		Computer pc = new Computer();
+		pc.brand = "APPLE"; 
+		pc.comment = "trial";
+		pc.manufacturedDate = Instant.now();
+		pc.manufacturer = "APPLE Inc";
+		pc.commissionedDate = LocalDate.now();
+		pc.serialNumber = "XYZ123";
+		pc.mouse = true;
+		
+		byte[] qrStream = qrService.getByteQRCode(String.valueOf(pc), QRSize.Large, ErrorCorrection.Low);
 		return Response.ok(new ByteArrayInputStream(qrStream)).build();
 
 	}
