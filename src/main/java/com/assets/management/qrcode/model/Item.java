@@ -39,11 +39,11 @@ public class Item extends PanacheEntity {
 	@Column(name = "manufactured_date")
 	public Instant manufacturedDate;
 
-	@NotNull
+//	@NotNull
 	@Column(name = "stocked_at")
 	public Instant stockedAt;
 
-	@NotNull
+//	@NotNull
 	@Column(name = "commissioning_date")
 	public LocalDate commissionedDate;
 
@@ -63,11 +63,11 @@ public class Item extends PanacheEntity {
 	@PostPersist
 	@PostUpdate
 	protected void calculateAge() {
-		if (commissioningDate == null) {
+		if (commissionedDate == null) {
 			timeInUse = null;
 			return;
 		}
-		timeInUse = Period.between(commissioningDate, LocalDate.now())
+		timeInUse = Period.between(commissionedDate, LocalDate.now())
 				.getYears();
 	}
 }

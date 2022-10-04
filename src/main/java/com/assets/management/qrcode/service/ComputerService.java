@@ -7,11 +7,11 @@ import java.util.Hashtable;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.validation.Valid;
 
 import org.jboss.logging.Logger;
 
-import com.assets.management.qrcode.model.ErrorCorrection;
-import com.assets.management.qrcode.model.QRSize;
+import com.assets.management.qrcode.model.Computer;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.WriterException;
@@ -21,14 +21,18 @@ import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 
 @ApplicationScoped
-public class QRCodeService {
+public class ComputerService {
 
 	@Inject
 	Logger LOG;
 	
-	public byte[] getByteQRCode(String content, QRSize size, ErrorCorrection corretionLevel)
+	public Computer persistComputer(@Valid Computer computer) {
+		Computer.persist(computer);
+		return computer;
+	}
+	
+	public byte[] getByteQRCode(String content /*, QRSize size*/)
 			throws WriterException, IOException {
-		String imageFormat = "png"; // could be jpeg, gif etc
 
 		LOG.info("QR Code Texts: " + content);
 
@@ -36,23 +40,29 @@ public class QRCodeService {
         hintMap.put(EncodeHintType.CHARACTER_SET, "UTF-8");
         hintMap.put(EncodeHintType.MARGIN, 1);
 		hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
-//		QRCodeWriter qrWriter = new QRCodeWriter();
-
+ 
+//		BitMatrix bitMatrix = new QRCodeWriter().encode(
+//				content, BarcodeFormat.QR_CODE, size.getSize(), size.getSize(),
+//				hintMap
+//		);
 		BitMatrix bitMatrix = new QRCodeWriter().encode(
-				content, BarcodeFormat.QR_CODE, size.getSize(), size.getSize(),
+				content, BarcodeFormat.QR_CODE, 125, 125,
 				hintMap
-		);
-
-//		LOG.info("QR Code bit matrix: " + bitMatrix.toString());
+				);
+ 
 		ByteArrayOutputStream pngOutputStream = new ByteArrayOutputStream();
 		MatrixToImageWriter.writeToStream(
-				bitMatrix, imageFormat, pngOutputStream
+				bitMatrix, "png", pngOutputStream
 		);
 		byte[] QRImage = pngOutputStream.toByteArray();
 		
 		// convert byte array into base64 encode String to be persisted 
 		String qRString = Base64.getEncoder().encodeToString(QRImage);
+		
+		// TODO: persist QR details ie qrstring and qrsize
+		
 		LOG.info("QR Code string representation: " + qRString);
-		return QRImage;
+//		return QRImage;
+		return Base64.getDecoder().decode(qRString);
 	}
 }

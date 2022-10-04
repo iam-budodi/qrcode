@@ -1,7 +1,9 @@
 package com.assets.management.qrcode.model;
 
+import javax.persistence.Entity;
 import javax.validation.constraints.NotNull;
 
+@Entity
 public class Computer extends Item {
 //public class Computer {
 

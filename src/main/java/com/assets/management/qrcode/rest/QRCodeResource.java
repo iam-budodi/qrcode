@@ -13,27 +13,30 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.assets.management.qrcode.model.Category;
 import com.assets.management.qrcode.model.Computer;
-import com.assets.management.qrcode.model.ErrorCorrection;
-import com.assets.management.qrcode.model.Item;
-import com.assets.management.qrcode.model.QRSize;
-import com.assets.management.qrcode.service.QRCodeService;
+import com.assets.management.qrcode.service.ComputerService;
+import com.assets.management.qrcode.service.PhoneService;
 import com.google.zxing.WriterException;
 
 @Path("/codes")
 public class QRCodeResource {
 
 	@Inject
-	QRCodeService qrService;
+	ComputerService qrService;
+	
+	@Inject
+	PhoneService phoneService;
 
 	@GET
 	@Produces("image/png")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response generateQR() throws WriterException, IOException {
-		String qrText = "Japhet Should Pass items Object";
+//		String qrText = "Japhet Should Pass items Object";
 //		int size = 125;
 
+		// TODO: pass this body on the method Parameter and change it to POST
+		// persist to the database then retrieve only few details for creating 
+		// QR, use select statement to filter few columns of table Computer/Phone
 		Computer pc = new Computer();
 		pc.brand = "APPLE"; 
 		pc.comment = "trial";
@@ -43,7 +46,8 @@ public class QRCodeResource {
 		pc.serialNumber = "XYZ123";
 		pc.mouse = true;
 		
-		byte[] qrStream = qrService.getByteQRCode(String.valueOf(pc), QRSize.Large, ErrorCorrection.Low);
+//		byte[] qrStream = qrService.getByteQRCode(String.valueOf(pc), QRSize.Large);
+		byte[] qrStream = qrService.getByteQRCode(String.valueOf(pc));
 		return Response.ok(new ByteArrayInputStream(qrStream)).build();
 
 	}
