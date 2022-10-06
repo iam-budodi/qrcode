@@ -38,3 +38,6 @@ nb-configuration.xml
 
 # Local environment
 .env
+
+# system config
+src/main/resources/application.properties
