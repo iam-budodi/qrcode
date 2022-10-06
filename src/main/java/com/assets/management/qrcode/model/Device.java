@@ -2,7 +2,9 @@ package com.assets.management.qrcode.model;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Period;
+import java.time.ZoneOffset;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,14 +15,16 @@ import javax.persistence.InheritanceType;
 import javax.persistence.PostLoad;
 import javax.persistence.PostPersist;
 import javax.persistence.PostUpdate;
+import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import io.smallrye.common.constraint.NotNull;
 
 @Entity
+@Table(name = "devices")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public class Item extends PanacheEntity {
+public class Device extends PanacheEntity {
 
 	@Column(length = 100)
 	public String name;
@@ -37,7 +41,7 @@ public class Item extends PanacheEntity {
 	public String manufacturer;
 
 	@Column(name = "manufactured_date")
-	public Instant manufacturedDate;
+	public LocalDate manufacturedDate;
 
 //	@NotNull
 	@Column(name = "stocked_at")
@@ -45,7 +49,10 @@ public class Item extends PanacheEntity {
 
 //	@NotNull
 	@Column(name = "commissioning_date")
-	public LocalDate commissionedDate;
+	public Instant commissionedDate;
+
+	@Column(name = "qr_string", length = 4000)
+	public String qrString;
 
 	@Column(length = 3000)
 	public String comment;
@@ -67,7 +74,13 @@ public class Item extends PanacheEntity {
 			timeInUse = null;
 			return;
 		}
-		timeInUse = Period.between(commissionedDate, LocalDate.now())
-				.getYears();
+
+		LocalDate date = LocalDateTime.ofInstant(
+				commissionedDate, ZoneOffset.UTC
+		).toLocalDate();
+		LocalDate current = LocalDateTime.ofInstant(
+				Instant.now(), ZoneOffset.UTC
+		).toLocalDate();
+		timeInUse = Period.between(date, current).getYears();
 	}
 }

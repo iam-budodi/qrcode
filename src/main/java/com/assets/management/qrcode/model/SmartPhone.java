@@ -8,12 +8,12 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "smart_phones")
-public class SmartPhone extends Item {
+//@Table(name = "smart_phones")
+//@DiscriminatorValue("S")
+public class SmartPhone extends Device {
 
 	@NotNull
 	@Column(name = "topped_up")
@@ -54,6 +54,8 @@ public class SmartPhone extends Item {
 		StringBuilder builder = new StringBuilder();
 		builder.append("\n{");
 		builder.append("\nSN: ").append(serialNumber).append("\t");
+		builder.append("\nSTOCKED: ").append(stockedAt).append("\t");
+		builder.append("\nYTD: ").append(timeInUse).append("\t");
 		builder.append("\nBRAND: ").append(brand).append("\t");
 //		builder.append("\nCOMMISSIONED DATE: ").append(
 //				commissionedDate.equals(null) ? "Still in stock"

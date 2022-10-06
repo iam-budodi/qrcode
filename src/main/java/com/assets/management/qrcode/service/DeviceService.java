@@ -2,6 +2,8 @@ package com.assets.management.qrcode.service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Base64;
 import java.util.Hashtable;
 import java.util.List;
@@ -9,17 +11,14 @@ import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
-import javax.enterprise.event.Reception;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import javax.ws.rs.NotFoundException;
 
 import org.jboss.logging.Logger;
 
-import com.assets.management.qrcode.model.QRCode;
+import com.assets.management.qrcode.model.Computer;
 import com.assets.management.qrcode.model.SmartPhone;
 import com.assets.management.qrcode.model.Status;
 import com.google.zxing.BarcodeFormat;
@@ -34,24 +33,25 @@ import io.quarkus.hibernate.orm.panache.Panache;
 
 @ApplicationScoped
 @Transactional(Transactional.TxType.REQUIRED)
-public class PhoneService {
+public class DeviceService {
 
 	@Inject
-	Logger LOG;
+	Logger LOG; 
 
-	@Inject
-	Event<SmartPhone> phoneEvt;
-//
-//	@Inject
-//	EntityManager entityManager;
-
-	public byte[] persistPhone(/* @Valid */ SmartPhone phone)
-			throws WriterException, IOException {
+	public byte[] persistPhone(@Valid SmartPhone phone) throws WriterException,
+			IOException {
+		phone.qrString = genQrString(phone);
+		phone.stockedAt = Instant.now(); 
+//		phone.commissionedDate = Instant.now();
 		SmartPhone.persist(phone);
-		String qrString = genPhoneQR(phone);
-		phoneEvt.fire(phone);
-		// return book;
-		return persistQrString(qrString, phone);
+		return Base64.getDecoder().decode(phone.qrString);
+	}
+
+	public byte[] persistComputer(@Valid Computer computer)
+			throws WriterException, IOException {
+		computer.qrString = genQrString(computer);
+		Computer.persist(computer);
+		return Base64.getDecoder().decode(computer.qrString);
 	}
 
 	@Transactional(Transactional.TxType.SUPPORTS)
@@ -107,81 +107,35 @@ public class PhoneService {
 		phone.delete();
 	}
 
-	private byte[] persistQrString(String qrCodeString, SmartPhone phone) {
-		QRCode qrCode = new QRCode();
-		qrCode.qrString = qrCodeString;
-		qrCode.phone    = phone;       // if it fails try setPhone(phone)
-
-		QRCode.persist(qrCode);
-		LOG.info("QR Code Object : " + qrCode);
-		return Base64.getDecoder().decode(qrCodeString);
-	}
-
-	// TODO: returm summary of all phones based on status
-
-	public void onPhonePersistOrUpdate(@Observes(
-			notifyObserver = Reception.IF_EXISTS
-	) SmartPhone phone) {
-
-		LOG.info("Event received with Phone object: " + phone);
-
-		// TODO: phone object assign to the variable
-	}
-
-	private String genPhoneQR(SmartPhone phone) throws WriterException,
+	private String genQrString(Object item) throws WriterException,
 			IOException {
 
-		LOG.info("QR Code Texts: " + phone);
-
+		ByteArrayOutputStream pngOutputStream = new ByteArrayOutputStream();
 		Hashtable<EncodeHintType, Object> hintMap = new Hashtable<>();
 		hintMap.put(EncodeHintType.CHARACTER_SET, "UTF-8");
 		hintMap.put(EncodeHintType.MARGIN, 1);
 		hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
 
-		BitMatrix bitMatrix = new QRCodeWriter().encode(
-				String.valueOf(phone), BarcodeFormat.QR_CODE, 150, 150, hintMap
-		);
+		BitMatrix bitMatrix = null;
 
-		ByteArrayOutputStream pngOutputStream = new ByteArrayOutputStream();
+		LOG.info("QR Code Texts: " + item);
+
+		if (item instanceof SmartPhone phone) {
+			bitMatrix = new QRCodeWriter().encode(
+					String.valueOf(phone), BarcodeFormat.QR_CODE, 150, 150,
+					hintMap
+			);
+		} else if (item instanceof Computer computer) {
+			bitMatrix = new QRCodeWriter().encode(
+					String.valueOf(computer), BarcodeFormat.QR_CODE, 150, 150,
+					hintMap
+			);
+		}
+
 		MatrixToImageWriter.writeToStream(bitMatrix, "png", pngOutputStream);
-		byte[] QRImage = pngOutputStream.toByteArray();
 
-		// convert byte array into base64 encode String to be persisted
-		String qrString = Base64.getEncoder().encodeToString(QRImage);
-
-		LOG.info("QR Code string representation: " + qrString);
-		return qrString;
+		return Base64.getEncoder().encodeToString(
+				pngOutputStream.toByteArray()
+		);
 	}
-
-//	public byte[] getPhoneQR(SmartPhone phone) {
-//		
-//	}
-
-//	public byte[] genPhoneQR(String content, QRSize size)
-//			throws WriterException, IOException {
-//		
-//		LOG.info("QR Code Texts: " + content);
-//		
-//		Hashtable<EncodeHintType, Object> hintMap = new Hashtable<>();
-//		hintMap.put(EncodeHintType.CHARACTER_SET, "UTF-8");
-//		hintMap.put(EncodeHintType.MARGIN, 1);
-//		hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
-//		
-//		BitMatrix bitMatrix = new QRCodeWriter().encode(
-//				content, BarcodeFormat.QR_CODE, size.getSize(), size.getSize(),
-//				hintMap
-//				);
-//		
-//		ByteArrayOutputStream pngOutputStream = new ByteArrayOutputStream();
-//		MatrixToImageWriter.writeToStream(bitMatrix, "png", pngOutputStream);
-//		byte[] QRImage = pngOutputStream.toByteArray();
-//		
-//		// convert byte array into base64 encode String to be persisted
-//		String qRString = Base64.getEncoder().encodeToString(QRImage);
-//		
-//		// TODO: persist QR details ie qrstring and qrsize
-//		
-//		LOG.info("QR Code string representation: " + qRString);
-//		return QRImage;
-//	}
 }
