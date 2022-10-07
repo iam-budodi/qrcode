@@ -3,8 +3,11 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.assets.management.qrcode</groupId>
-  <artifactId>qrcode</artifactId>
+  <artifactId>qr_code</artifactId>
   <version>1.0.0</version>
+  
+  <name>Assets Management :: QR Code REST Microservice</name>
+  
   <properties>
     <compiler-plugin.version>3.8.1</compiler-plugin.version>
     <maven.compiler.release>17</maven.compiler.release>
