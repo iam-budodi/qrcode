@@ -20,16 +20,16 @@ public class QrContent {
 	public String serialNumber;
 	
 //	@NotNull
-	public String brand;
+	public String modelName;
 	
 //	@NotNull
 //	@JsonProperty("generated_at")
-	public Instant generatedAt;
+	public Instant stockedAt;
 
 	@Override
 	public String toString() {
 		return "QrContent [id=" + id + ", serialNumber=" + serialNumber
-				+ ", brand=" + brand + ", generatedAt=" + generatedAt + "]";
+				+ ", modelName=" + modelName + ", stockedAt=" + stockedAt + "]";
 	} 
 	
 	
