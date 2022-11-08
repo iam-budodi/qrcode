@@ -20,7 +20,7 @@ import org.jboss.logging.Logger;
 import com.assets.management.qrcode.service.QrContent;
 import com.assets.management.qrcode.service.QrService;
 
-@Path("/devices/qr")
+@Path("/codes")
 public class QrResource {
 
 	@Inject
@@ -30,9 +30,10 @@ public class QrResource {
 	Logger LOG;
 
 	@POST 
+	@Path("/qr")
 	@Consumes(MediaType.APPLICATION_JSON) 
 	@Produces("image/png") 
-	public Response CreateQrString(@Valid QrContent content, @Context UriInfo uriInfo) {
+	public Response createQrString(@Valid QrContent content, @Context UriInfo uriInfo) {
  
 		LOG.info("Resource for creating QR: " + content); 
 		
