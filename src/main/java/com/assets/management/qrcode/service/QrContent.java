@@ -1,37 +1,24 @@
 package com.assets.management.qrcode.service;
 
-import java.time.Instant;
-
-import javax.validation.constraints.NotNull;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.time.LocalDateTime;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
 public class QrContent {
- 
-//	@NotNull
-//	@JsonProperty("device_number")
-	public Long id;
-	
-//	@NotNull
-//	@JsonProperty("serial_number")
-	public String serialNumber;
-	
-//	@NotNull
-	public String modelName;
-	
-//	@NotNull
-//	@JsonProperty("generated_at")
-	public Instant stockedAt;
+	public String itemSerialNumber;
+	public String workId;
+	public LocalDateTime dateAssigned;
 
 	@Override
 	public String toString() {
-		return "QrContent [id=" + id + ", serialNumber=" + serialNumber
-				+ ", modelName=" + modelName + ", stockedAt=" + stockedAt + "]";
-	} 
+		return "QrContent {"
+				+ "itemSerialNumber=" + itemSerialNumber + 
+				", workId=" + workId + 
+				", dateAssigned=" + dateAssigned + 
+				"}";
+	}
 	
 	
- 
+
 }

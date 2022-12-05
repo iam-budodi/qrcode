@@ -33,7 +33,7 @@ public class QrService {
 		hintMap.put(EncodeHintType.CHARACTER_SET, "UTF-8");
 		hintMap.put(EncodeHintType.MARGIN, 1);
 		hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
-
+		
 		BitMatrix bitMatrix = new QRCodeWriter().encode(
 				String.valueOf(content), BarcodeFormat.QR_CODE, 150, 150,
 				hintMap

@@ -44,9 +44,7 @@ public class QrResource {
 			return Response.status(Response.Status.BAD_REQUEST).build();
 		} 
 		
-		URI createdUri = uriInfo.getAbsolutePathBuilder().path(
-				Long.toString(content.id)
-		).build();
+		URI createdUri = uriInfo.getAbsolutePathBuilder().path(content.itemSerialNumber).build();
 		
 		LOG.info("Returnd Resource String: " + Base64.getEncoder().encodeToString(qrStream));
 		 
